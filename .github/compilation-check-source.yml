@@ -1,0 +1,312 @@
+# use https://www.yamllint.com to generate yaml without aliases
+name: KMP library compilation check
+
+on:
+  pull_request:
+    branches:
+      - master
+      - develop
+  push:
+    branches:
+      - master
+      - develop
+
+.checkout: &checkout
+  uses: actions/checkout@v4
+
+.setup_jdk: &setup_jdk
+  name: Set up JDK 17
+  uses: actions/setup-java@v4
+  with:
+    java-version: 17
+    distribution: zulu
+
+.setup_gradle: &setup_gradle
+  name: Setup Gradle
+  uses: gradle/gradle-build-action@v3
+  with:
+    cache-read-only: ${{ github.ref != 'refs/heads/master' && github.ref != 'refs/heads/develop' }}
+
+.publish_test_report: &publish_test_report
+  name: Publish Test Report
+  uses: mikepenz/action-junit-report@v4
+  if: ${{ always() }}
+  with:
+    report_paths: '**/build/test-results/**/TEST-*.xml'
+    github_token: ${{ secrets.GITHUB_TOKEN }}
+
+.upload_reports: &upload_reports
+  name: Archive reports
+  uses: actions/upload-artifact@v4
+  if: ${{ always() }}
+  with:
+    name: code-coverage-report-${{ github.job }}-${{ matrix.os }}
+    path: '**/build/reports/**/*'
+
+.download_maven: &download_maven
+  name: Download maven artifacts
+  uses: actions/download-artifact@v4
+  with:
+    name: maven
+    path: ~/.m2/repository/dev/icerock
+
+.cache_konan: &cache_konan
+  name: Cache .konan
+  uses: actions/cache@v4
+  with:
+    path: ~/.konan
+    key: ${{ matrix.os }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
+
+.runner_matrix: &runner_matrix
+  os: [ macOS-latest, windows-latest, ubuntu-latest ]
+
+jobs:
+  build-library:
+    runs-on: macOS-latest
+
+    steps:
+      - *checkout
+      - *setup_jdk
+      - *setup_gradle
+      - *cache_konan
+
+      - name: Check
+        run: ./local-check.sh
+        shell: bash
+      - name: Plugin local publish
+        run: ./gradlew -p resources-generator publishToMavenLocal
+        shell: bash
+      - name: Library local publish
+        run: ./gradlew publishToMavenLocal
+        shell: bash
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: maven
+          path: ~/.m2/repository/dev/icerock
+
+      - *publish_test_report
+      - *upload_reports
+
+  check-sample-android-mpp-app:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        <<: *runner_matrix
+    needs: build-library
+
+    steps:
+      - *checkout
+      - *setup_jdk
+      - *setup_gradle
+      - *cache_konan
+      - *download_maven
+
+      - name: Sample - android-mpp-app
+        run: cd samples/android-mpp-app && ./local-check.sh
+        shell: bash
+
+      - *publish_test_report
+      - *upload_reports
+
+  check-sample-auto-manifest:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        <<: *runner_matrix
+    needs: build-library
+
+    steps:
+      - *checkout
+      - *setup_jdk
+      - *setup_gradle
+      - *cache_konan
+      - *download_maven
+
+      - name: Sample - auto-manifest
+        run: cd samples/auto-manifest && ./local-check.sh
+        shell: bash
+
+      - *publish_test_report
+      - *upload_reports
+
+  check-sample-compose-jvm-app:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        <<: *runner_matrix
+    needs: build-library
+
+    steps:
+      - *checkout
+      - *setup_jdk
+      - *setup_gradle
+      - *cache_konan
+      - *download_maven
+
+      - name: Sample - compose-jvm-app
+        run: cd samples/compose-jvm-app && ./local-check.sh
+        shell: bash
+
+      - *publish_test_report
+      - *upload_reports
+
+  check-sample-resources-gallery:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        <<: *runner_matrix
+    needs: build-library
+
+    steps:
+      - *checkout
+      - *setup_jdk
+      - *setup_gradle
+      - *cache_konan
+      - *download_maven
+
+      - name: Sample - resources-gallery
+        run: cd samples/resources-gallery && ./local-check.sh
+        shell: bash
+
+      - *publish_test_report
+      - *upload_reports
+
+  check-sample-default-hierarchy-resources-gallery-mobile:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        <<: *runner_matrix
+    needs: build-library
+
+    steps:
+      - *checkout
+      - *setup_jdk
+      - *setup_gradle
+      - *cache_konan
+      - *download_maven
+
+      - name: Sample - default-hierarchy-gallery-mobile
+        run: cd samples/default-hierarchy-gallery-mobile && ./local-check.sh
+        shell: bash
+
+      - *publish_test_report
+      - *upload_reports
+
+  check-sample-ios-static-xcframework:
+    runs-on: macOS-latest
+    needs: build-library
+
+    steps:
+      - *checkout
+      - *setup_jdk
+      - *setup_gradle
+      - *cache_konan
+      - *download_maven
+
+      - name: Sample - ios-static-xcframework
+        run: cd samples/ios-static-xcframework && ./local-check.sh
+        shell: bash
+
+      - *publish_test_report
+      - *upload_reports
+
+  check-sample-ios-cocoapods-static-framework:
+    runs-on: macOS-latest
+    needs: build-library
+
+    steps:
+      - *checkout
+      - *setup_jdk
+      - *setup_gradle
+      - *cache_konan
+      - *download_maven
+
+      - name: Sample - ios-cocoapods-static-framework
+        run: cd samples/ios-cocoapods-static-framework && ./local-check.sh
+        shell: bash
+
+      - *publish_test_report
+      - *upload_reports
+
+  check-sample-kotlin-ios-app:
+    runs-on: macOS-latest
+    needs: build-library
+
+    steps:
+      - *checkout
+      - *setup_jdk
+      - *setup_gradle
+      - *cache_konan
+      - *download_maven
+
+      - name: Sample - kotlin-ios-app
+        run: cd samples/kotlin-ios-app && ./local-check.sh
+        shell: bash
+
+      - *publish_test_report
+      - *upload_reports
+
+  check-sample-compose-resources-gallery:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        <<: *runner_matrix
+    needs: build-library
+
+    steps:
+      - *checkout
+      - *setup_jdk
+      - *setup_gradle
+      - *cache_konan
+      - *download_maven
+
+      - name: Sample - compose-resources-gallery
+        run: cd samples/compose-resources-gallery && ./local-check.sh
+        shell: bash
+
+      - *publish_test_report
+      - *upload_reports
+
+  check-kotlin-2-sample:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        <<: *runner_matrix
+    needs: build-library
+
+    steps:
+      - *checkout
+      - *setup_jdk
+      - *setup_gradle
+      - *cache_konan
+      - *download_maven
+
+      - name: Sample - kotlin-2-sample
+        run: cd samples/kotlin-2-sample && ./local-check.sh
+        shell: bash
+
+      - *publish_test_report
+      - *upload_reports
+
+  check-cm-resources-sample:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        <<: *runner_matrix
+    needs: build-library
+
+    steps:
+      - *checkout
+      - *setup_jdk
+      - *setup_gradle
+      - *cache_konan
+      - *download_maven
+
+      - name: Sample - cm-resources-sample
+        run: cd samples/cm-resources-sample && ./local-check.sh
+        shell: bash
+
+      - *publish_test_report
+      - *upload_reports

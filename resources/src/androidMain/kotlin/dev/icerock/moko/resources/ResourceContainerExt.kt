@@ -9,8 +9,11 @@ actual fun ResourceContainer<ImageResource>.getImageByFileName(fileName: String)
 
     val lastNamePart = if (fileName.length > 1) {
         fileName.substring(1, fileName.length)
-    } else ""
-    val methodName = StringBuilder()
+    } else {
+        ""
+    }
+
+    val methodName: String = StringBuilder()
         .append("get")
         .append(fileName[0].uppercaseChar())
         .append(lastNamePart).toString()
@@ -18,4 +21,8 @@ actual fun ResourceContainer<ImageResource>.getImageByFileName(fileName: String)
     return this::class.java.methods
         .find { it.name == methodName }
         ?.let { it.invoke(this) as ImageResource }
+}
+
+actual fun ResourceContainer<AssetResource>.getAssetByFilePath(filePath: String): AssetResource? {
+    return AssetResource(filePath.removeFirstSlash())
 }

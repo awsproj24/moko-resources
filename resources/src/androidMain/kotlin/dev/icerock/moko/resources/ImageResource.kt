@@ -4,11 +4,14 @@
 
 package dev.icerock.moko.resources
 
-import android.os.Parcelable
+import android.content.Context
+import android.graphics.drawable.Drawable
 import androidx.annotation.DrawableRes
-import kotlinx.parcelize.Parcelize
+import androidx.core.content.ContextCompat
 
-@Parcelize
-actual class ImageResource(
+actual data class ImageResource(
     @DrawableRes val drawableResId: Int
-) : Parcelable
+) {
+
+    fun getDrawable(context: Context): Drawable? = ContextCompat.getDrawable(context, drawableResId)
+}

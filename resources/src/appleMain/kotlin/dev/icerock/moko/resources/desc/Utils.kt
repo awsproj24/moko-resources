@@ -9,16 +9,43 @@ import platform.Foundation.NSString
 import platform.Foundation.stringWithFormat
 
 object Utils {
+    const val BASE_LOCALIZATION: String = "Base"
+
     fun processArgs(args: List<Any>): Array<out Any> {
         return args.map { (it as? StringDesc)?.localized() ?: it }.toTypedArray()
     }
 
     fun localizedString(stringRes: StringResource): String {
         val bundle = StringDesc.localeType.getLocaleBundle(stringRes.bundle)
-        val string = bundle.localizedStringForKey(stringRes.resourceId, null, null)
-        return if (string == stringRes.resourceId) {
-            stringRes.bundle.localizedStringForKey(stringRes.resourceId, null, null)
-        } else string
+        val stringInCurrentLocale = bundle.localizedStringForKey(
+            key = stringRes.resourceId,
+            value = null,
+            table = null
+        )
+
+        return if (stringInCurrentLocale == stringRes.resourceId) {
+            val stringInDefaultBundle = stringRes.bundle.localizedStringForKey(
+                key = stringRes.resourceId,
+                value = null,
+                table = null
+            )
+
+            if (stringInDefaultBundle == stringRes.resourceId) {
+                val fallbackLocale = stringRes.bundle.developmentLocalization ?: BASE_LOCALIZATION
+                val fallbackLocaleBundle = StringDesc.LocaleType
+                    .Custom(fallbackLocale)
+                    .getLocaleBundle(stringRes.bundle)
+                fallbackLocaleBundle.localizedStringForKey(
+                    key = stringRes.resourceId,
+                    value = null,
+                    table = null
+                )
+            } else {
+                stringInDefaultBundle
+            }
+        } else {
+            stringInCurrentLocale
+        }
     }
 
     fun stringWithFormat(format: String, args: Array<out Any>): String {
@@ -76,7 +103,490 @@ object Utils {
                 args[7],
                 args[8]
             )
-            else -> throw IllegalArgumentException("can't handle more then 9 arguments now")
+            10 -> NSString.stringWithFormat(
+                objcFormat,
+                args[0],
+                args[1],
+                args[2],
+                args[3],
+                args[4],
+                args[5],
+                args[6],
+                args[7],
+                args[8],
+                args[9]
+            )
+            11 -> NSString.stringWithFormat(
+                objcFormat,
+                args[0],
+                args[1],
+                args[2],
+                args[3],
+                args[4],
+                args[5],
+                args[6],
+                args[7],
+                args[8],
+                args[9],
+                args[10]
+            )
+            12 -> NSString.stringWithFormat(
+                objcFormat,
+                args[0],
+                args[1],
+                args[2],
+                args[3],
+                args[4],
+                args[5],
+                args[6],
+                args[7],
+                args[8],
+                args[9],
+                args[10],
+                args[11]
+            )
+            13 -> NSString.stringWithFormat(
+                objcFormat,
+                args[0],
+                args[1],
+                args[2],
+                args[3],
+                args[4],
+                args[5],
+                args[6],
+                args[7],
+                args[8],
+                args[9],
+                args[10],
+                args[11],
+                args[12]
+            )
+            14 -> NSString.stringWithFormat(
+                objcFormat,
+                args[0],
+                args[1],
+                args[2],
+                args[3],
+                args[4],
+                args[5],
+                args[6],
+                args[7],
+                args[8],
+                args[9],
+                args[10],
+                args[11],
+                args[12],
+                args[13]
+            )
+            15 -> NSString.stringWithFormat(
+                objcFormat,
+                args[0],
+                args[1],
+                args[2],
+                args[3],
+                args[4],
+                args[5],
+                args[6],
+                args[7],
+                args[8],
+                args[9],
+                args[10],
+                args[11],
+                args[12],
+                args[13],
+                args[14]
+            )
+            16 -> NSString.stringWithFormat(
+                objcFormat,
+                args[0],
+                args[1],
+                args[2],
+                args[3],
+                args[4],
+                args[5],
+                args[6],
+                args[7],
+                args[8],
+                args[9],
+                args[10],
+                args[11],
+                args[12],
+                args[13],
+                args[14],
+                args[15]
+            )
+            17 -> NSString.stringWithFormat(
+                objcFormat,
+                args[0],
+                args[1],
+                args[2],
+                args[3],
+                args[4],
+                args[5],
+                args[6],
+                args[7],
+                args[8],
+                args[9],
+                args[10],
+                args[11],
+                args[12],
+                args[13],
+                args[14],
+                args[15],
+                args[16]
+            )
+            18 -> NSString.stringWithFormat(
+                objcFormat,
+                args[0],
+                args[1],
+                args[2],
+                args[3],
+                args[4],
+                args[5],
+                args[6],
+                args[7],
+                args[8],
+                args[9],
+                args[10],
+                args[11],
+                args[12],
+                args[13],
+                args[14],
+                args[15],
+                args[16],
+                args[17]
+            )
+            19 -> NSString.stringWithFormat(
+                objcFormat,
+                args[0],
+                args[1],
+                args[2],
+                args[3],
+                args[4],
+                args[5],
+                args[6],
+                args[7],
+                args[8],
+                args[9],
+                args[10],
+                args[11],
+                args[12],
+                args[13],
+                args[14],
+                args[15],
+                args[16],
+                args[17],
+                args[18]
+            )
+            20 -> NSString.stringWithFormat(
+                objcFormat,
+                args[0],
+                args[1],
+                args[2],
+                args[3],
+                args[4],
+                args[5],
+                args[6],
+                args[7],
+                args[8],
+                args[9],
+                args[10],
+                args[11],
+                args[12],
+                args[13],
+                args[14],
+                args[15],
+                args[16],
+                args[17],
+                args[18],
+                args[19]
+            )
+            21 -> NSString.stringWithFormat(
+                objcFormat,
+                args[0],
+                args[1],
+                args[2],
+                args[3],
+                args[4],
+                args[5],
+                args[6],
+                args[7],
+                args[8],
+                args[9],
+                args[10],
+                args[11],
+                args[12],
+                args[13],
+                args[14],
+                args[15],
+                args[16],
+                args[17],
+                args[18],
+                args[19],
+                args[20]
+            )
+            22 -> NSString.stringWithFormat(
+                objcFormat,
+                args[0],
+                args[1],
+                args[2],
+                args[3],
+                args[4],
+                args[5],
+                args[6],
+                args[7],
+                args[8],
+                args[9],
+                args[10],
+                args[11],
+                args[12],
+                args[13],
+                args[14],
+                args[15],
+                args[16],
+                args[17],
+                args[18],
+                args[19],
+                args[20],
+                args[21]
+            )
+            23 -> NSString.stringWithFormat(
+                objcFormat,
+                args[0],
+                args[1],
+                args[2],
+                args[3],
+                args[4],
+                args[5],
+                args[6],
+                args[7],
+                args[8],
+                args[9],
+                args[10],
+                args[11],
+                args[12],
+                args[13],
+                args[14],
+                args[15],
+                args[16],
+                args[17],
+                args[18],
+                args[19],
+                args[20],
+                args[21],
+                args[22]
+            )
+            24 -> NSString.stringWithFormat(
+                objcFormat,
+                args[0],
+                args[1],
+                args[2],
+                args[3],
+                args[4],
+                args[5],
+                args[6],
+                args[7],
+                args[8],
+                args[9],
+                args[10],
+                args[11],
+                args[12],
+                args[13],
+                args[14],
+                args[15],
+                args[16],
+                args[17],
+                args[18],
+                args[19],
+                args[20],
+                args[21],
+                args[22],
+                args[23]
+            )
+            25 -> NSString.stringWithFormat(
+                objcFormat,
+                args[0],
+                args[1],
+                args[2],
+                args[3],
+                args[4],
+                args[5],
+                args[6],
+                args[7],
+                args[8],
+                args[9],
+                args[10],
+                args[11],
+                args[12],
+                args[13],
+                args[14],
+                args[15],
+                args[16],
+                args[17],
+                args[18],
+                args[19],
+                args[20],
+                args[21],
+                args[22],
+                args[23],
+                args[24]
+            )
+            26 -> NSString.stringWithFormat(
+                objcFormat,
+                args[0],
+                args[1],
+                args[2],
+                args[3],
+                args[4],
+                args[5],
+                args[6],
+                args[7],
+                args[8],
+                args[9],
+                args[10],
+                args[11],
+                args[12],
+                args[13],
+                args[14],
+                args[15],
+                args[16],
+                args[17],
+                args[18],
+                args[19],
+                args[20],
+                args[21],
+                args[22],
+                args[23],
+                args[24],
+                args[25]
+            )
+            27 -> NSString.stringWithFormat(
+                objcFormat,
+                args[0],
+                args[1],
+                args[2],
+                args[3],
+                args[4],
+                args[5],
+                args[6],
+                args[7],
+                args[8],
+                args[9],
+                args[10],
+                args[11],
+                args[12],
+                args[13],
+                args[14],
+                args[15],
+                args[16],
+                args[17],
+                args[18],
+                args[19],
+                args[20],
+                args[21],
+                args[22],
+                args[23],
+                args[24],
+                args[25],
+                args[26]
+            )
+            28 -> NSString.stringWithFormat(
+                objcFormat,
+                args[0],
+                args[1],
+                args[2],
+                args[3],
+                args[4],
+                args[5],
+                args[6],
+                args[7],
+                args[8],
+                args[9],
+                args[10],
+                args[11],
+                args[12],
+                args[13],
+                args[14],
+                args[15],
+                args[16],
+                args[17],
+                args[18],
+                args[19],
+                args[20],
+                args[21],
+                args[22],
+                args[23],
+                args[24],
+                args[25],
+                args[26],
+                args[27]
+            )
+            29 -> NSString.stringWithFormat(
+                objcFormat,
+                args[0],
+                args[1],
+                args[2],
+                args[3],
+                args[4],
+                args[5],
+                args[6],
+                args[7],
+                args[8],
+                args[9],
+                args[10],
+                args[11],
+                args[12],
+                args[13],
+                args[14],
+                args[15],
+                args[16],
+                args[17],
+                args[18],
+                args[19],
+                args[20],
+                args[21],
+                args[22],
+                args[23],
+                args[24],
+                args[25],
+                args[26],
+                args[27],
+                args[28]
+            )
+            30 -> NSString.stringWithFormat(
+                objcFormat,
+                args[0],
+                args[1],
+                args[2],
+                args[3],
+                args[4],
+                args[5],
+                args[6],
+                args[7],
+                args[8],
+                args[9],
+                args[10],
+                args[11],
+                args[12],
+                args[13],
+                args[14],
+                args[15],
+                args[16],
+                args[17],
+                args[18],
+                args[19],
+                args[20],
+                args[21],
+                args[22],
+                args[23],
+                args[24],
+                args[25],
+                args[26],
+                args[27],
+                args[28],
+                args[29]
+            )
+            else -> throw IllegalArgumentException("can't handle more then 29 arguments now")
         }
     }
 }

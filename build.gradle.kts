@@ -13,7 +13,7 @@ buildscript {
     }
     dependencies {
         classpath("dev.icerock.moko:resources-generator")
-        classpath("org.jetbrains.compose:compose-gradle-plugin:1.0.0")
+        classpath(libs.composeJetBrainsPlugin)
         classpath(":resources-build-logic")
     }
 }
@@ -21,6 +21,6 @@ buildscript {
 allprojects {
     plugins.withId("org.gradle.maven-publish") {
         group = "dev.icerock.moko"
-        version = libs.versions.mokoResourcesVersion.get()
+        version = moko.versions.resourcesVersion.get()
     }
 }

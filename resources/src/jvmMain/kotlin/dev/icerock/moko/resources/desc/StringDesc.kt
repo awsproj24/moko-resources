@@ -12,14 +12,14 @@ actual interface StringDesc {
     actual sealed class LocaleType {
         abstract val currentLocale: Locale
 
-        actual object System : LocaleType() {
+        actual data object System : LocaleType() {
             override val currentLocale: Locale get() = Locale.getDefault()
         }
 
         actual class Custom actual constructor(
-            private val locale: String
+            locale: String
         ) : LocaleType() {
-            override val currentLocale: Locale get() = Locale(locale)
+            override val currentLocale: Locale = Locale.forLanguageTag(locale)
         }
     }
 

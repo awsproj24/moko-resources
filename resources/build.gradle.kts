@@ -3,36 +3,42 @@
  */
 
 plugins {
-    id("multiplatform-library-convention")
+    id("multiplatform-library-extended-convention")
     id("multiplatform-android-publish-convention")
     id("apple-main-convention")
-    id("kotlin-parcelize")
     id("detekt-convention")
     id("javadoc-stub-convention")
     id("publication-convention")
 }
 
 kotlin {
-    targets
-        .matching { it is org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget }
-        .configureEach {
-            this as org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+    sourceSets {
+        getByName("jsMain") {
+            dependencies {
+                api(npm("bcp-47", "2.1.0"))
+                api(npm("@messageformat/core", "3.1.0"))
+                api(npm("mini-css-extract-plugin", "2.7.5"))
+                api(npm("css-loader", "6.7.3"))
+                api(npm("style-loader", "3.3.2"))
 
-            compilations.getByName("main") {
-                val pluralizedString by cinterops.creating {
-                    defFile(project.file("src/appleMain/def/pluralizedString.def"))
-                }
+                implementation(libs.kotlinxCoroutines)
             }
         }
+    }
+}
+
+android {
+    namespace = "dev.icerock.moko.resources"
 }
 
 dependencies {
-    commonMainApi(libs.mokoParcelize)
     commonMainApi(libs.mokoGraphics)
 
     jvmMainImplementation(libs.icu4j)
+    jvmMainImplementation(libs.batikRasterizer)
+    jvmMainImplementation(libs.batikTranscoder)
 
-    androidMainImplementation(libs.appCompat)
+    androidMainImplementation(libs.appCompatResources)
 
     iosTestImplementation(libs.mokoTestCore)
 }
@@ -43,9 +49,16 @@ tasks.named("publishToMavenLocal") {
     dependsOn(pluginPublish)
 }
 
-val copyIosTestResources = tasks.register<Copy>("copyIosTestResources") {
+val copyIosX64TestResources = tasks.register<Copy>("copyIosX64TestResources") {
     from("src/iosTest/resources")
     into("build/bin/iosX64/debugTest")
 }
 
-tasks.findByName("iosX64Test")!!.dependsOn(copyIosTestResources)
+tasks.findByName("iosX64Test")!!.dependsOn(copyIosX64TestResources)
+
+val copyIosArm64TestResources = tasks.register<Copy>("copyIosArm64TestResources") {
+    from("src/iosTest/resources")
+    into("build/bin/iosSimulatorArm64/debugTest")
+}
+
+tasks.findByName("iosSimulatorArm64Test")!!.dependsOn(copyIosArm64TestResources)

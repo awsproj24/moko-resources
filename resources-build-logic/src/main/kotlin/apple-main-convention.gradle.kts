@@ -8,7 +8,7 @@ plugins {
 
 kotlin {
     sourceSets {
-        val commonMain by getting {}
+        val commonMain by getting
 
         val appleMain by creating {
             dependsOn(commonMain)
@@ -16,19 +16,25 @@ kotlin {
         val iosMain by getting {
             dependsOn(appleMain)
         }
-        val macosX64Main by getting {
+        val macosMain by getting {
             dependsOn(appleMain)
         }
 
-        val commonTest by getting {}
+        val commonTest by getting
         val appleTest by creating {
             dependsOn(commonTest)
         }
         val iosTest by getting {
             dependsOn(appleTest)
         }
-        val macosX64Test by getting {
+        val macosTest by getting {
             dependsOn(appleTest)
         }
+    }
+
+    sourceSets.matching {
+        it.name == "watchosMain"
+    }.configureEach {
+        this.dependsOn(sourceSets.getByName("appleMain"))
     }
 }
